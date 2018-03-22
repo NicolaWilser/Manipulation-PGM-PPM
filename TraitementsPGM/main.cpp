@@ -26,7 +26,6 @@ bool lirePGM(string nomFichier, int &nbLignes, int &nbColonnes, unsigned char *&
         return false;
     string extension;
     fichier >> extension;
-    cout << extension << endl;
     if (extension == "P5" || extension == "p5") // rajoute P3 quand t'as le temps
     {
         fichier >> nbLignes >> nbColonnes;
@@ -68,9 +67,7 @@ void calculerContours(unsigned char *image, int nbLignes, int nbColonnes, string
 {
     int seuil = 50;
     int nbElements = nbLignes*nbColonnes;
-        cout << "ok";
-    retour = new unsigned char[nbElements*2]; // POURQUOI CA MARCHE PAS AVEC NBELEMENTS ????????
-        cout << "ok";
+    retour = new unsigned char[nbElements*10]; // POURQUOI CA MARCHE PAS AVEC NBELEMENTS ????????
     for (int i = 0; i <= nbElements; i++)
     {
         retour[i] = (unsigned char)0;
@@ -83,17 +80,27 @@ void calculerContours(unsigned char *image, int nbLignes, int nbColonnes, string
     }
 }
 
-int main()
+void contours(string nomFichier, string methode)
 {
     int nbLignes, nbColonnes;
     unsigned char *image;
     unsigned char *contours;
-    string nomFichier;
-    cout << "Entrez le nom du fichier PGM (sans l'extension) : " << endl;
-    cin >> nomFichier;
     lirePGM(nomFichier+".pgm", nbLignes, nbColonnes, image);
     cout << "Nombre lignes = " << nbLignes << " et de colonnes = " << nbColonnes << endl;
-    calculerContours(image, nbLignes, nbColonnes, "roberts", contours);
+    calculerContours(image, nbLignes, nbColonnes, methode, contours);
     ecrirePGM(nomFichier+"contours.pgm", nbLignes, nbColonnes, contours);
+    cout << nomFichier+"contours.pgm" << " cree." << endl;
+}
+
+int main()
+{
+    string nomFichier, nomMethode;
+    cout << "Entrez le nom du fichier PGM (sans l'extension) : " << endl;
+    cin >> nomFichier;
+    cout << endl;
+    cout << "Entrez le nom de la methode (roberts, ...) : " << endl;
+    cin >> nomMethode;
+    cout << endl;
+    contours(nomFichier, nomMethode);
     return 0;
 }
