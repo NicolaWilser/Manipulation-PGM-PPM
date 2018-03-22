@@ -28,7 +28,7 @@ bool lirePGM(string nomFichier, int &nbLignes, int &nbColonnes, unsigned char *&
     fichier >> extension;
     if (extension == "P5" || extension == "p5") // rajoute P3 quand t'as le temps
     {
-        fichier >> nbLignes >> nbColonnes;
+        fichier >> nbColonnes >> nbLignes;
         int valMax;
         fichier >> valMax;
         image = new unsigned char[nbLignes*nbColonnes];
@@ -45,7 +45,7 @@ bool lirePGM(string nomFichier, int &nbLignes, int &nbColonnes, unsigned char *&
 void ecrirePGM(string nomFichier, int nbLignes, int nbColonnes, unsigned char *image)
 {
     ofstream fichier(nomFichier.c_str());
-    fichier << "P5" << endl << nbLignes << " " << nbColonnes << " " << 255;
+    fichier << "P5" << endl << nbColonnes << " " << nbLignes << endl << 255 << endl;
     int nbElements = nbLignes*nbColonnes;
     for (int i = 0; i <= nbElements; i++)
         fichier.write(reinterpret_cast<char*>(image+i), 1);
@@ -69,9 +69,9 @@ double gradient(unsigned char *image, int indice, int nbLignes, int nbColonnes, 
 */
 void calculerContours(unsigned char *image, int nbLignes, int nbColonnes, string methode, unsigned char *&retour)
 {
-    int seuil = 50;
+    int seuil = 30;
     int nbElements = nbLignes*nbColonnes;
-    retour = new unsigned char[nbElements*10]; // POURQUOI CA MARCHE PAS AVEC NBELEMENTS ????????
+    retour = new unsigned char[nbElements*15]; // POURQUOI CA MARCHE PAS AVEC NBELEMENTS ????????
     for (int i = 0; i <= nbElements; i++)
     {
         retour[i] = (unsigned char)0;
