@@ -57,12 +57,16 @@ double gradient(unsigned char *image, int indice, int nbLignes, int nbColonnes, 
     if (methode == "roberts")
     {
         int x = (int)image[indice]-(int)image[indice+nbColonnes+1];
-        int y = (int)image[indice+1]-(int)image[indice+nbColonnes-1];
+        int y = (int)image[indice+1]-(int)image[indice+nbColonnes];
         double grad = sqrt(pow(x,2)+pow(y,2));
         return grad;
     }
 }
-
+/*
+[indice-nbColonnes-1]   [indice-nbColonnes]     [indice-nbColonnes+1]
+[indice-1]              [indice]                [indice+1]
+[indice+nbColonnes-1]   [indice+nbColonnes]     [indice+nbColonnes+1]
+*/
 void calculerContours(unsigned char *image, int nbLignes, int nbColonnes, string methode, unsigned char *&retour)
 {
     int seuil = 50;
