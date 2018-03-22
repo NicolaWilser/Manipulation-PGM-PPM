@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1521726863 source:c:\users\nico\desktop\traitement d'images\traitementspgm\main.cpp
+	<iostream>
+	<fstream>
+	<sstream>
+	<cmath>
+	<cstdlib>
+
