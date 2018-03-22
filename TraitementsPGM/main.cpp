@@ -1,23 +1,8 @@
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <cmath>
-#include <cstdlib>
 
 using namespace std;
-
-void afficherImageEnBrute(unsigned char *image, int nbLignes, int nbColonnes)
-{
-    int indice = 0;
-    for (int i = 0; i < nbLignes; i++)
-    {
-        for (int j = 0; j < nbColonnes; j++)
-        {
-            cout << (int)image[indice++] << " |";
-        }
-        cout << endl;
-    }
-}
 
 bool lirePGM(string nomFichier, int &nbLignes, int &nbColonnes, unsigned char *&image)
 {
@@ -26,7 +11,7 @@ bool lirePGM(string nomFichier, int &nbLignes, int &nbColonnes, unsigned char *&
         return false;
     string extension;
     fichier >> extension;
-    if (extension == "P5" || extension == "p5") // rajoute P3 quand t'as le temps
+    if (extension == "P5" || extension == "p5") // ne gere pas P3 pour le moment
     {
         fichier >> nbColonnes >> nbLignes;
         int valMax;
@@ -49,8 +34,14 @@ void ecrirePGM(string nomFichier, int nbLignes, int nbColonnes, unsigned char *i
     int nbElements = nbLignes*nbColonnes;
     for (int i = 0; i <= nbElements; i++)
         fichier.write(reinterpret_cast<char*>(image+i), 1);
-        fichier.close();
+    fichier.close();
 }
+
+/* Aide pour calculer le gradient :
+[indice-nbColonnes-1]   [indice-nbColonnes]     [indice-nbColonnes+1]
+[indice-1]              [indice]                [indice+1]
+[indice+nbColonnes-1]   [indice+nbColonnes]     [indice+nbColonnes+1]
+*/
 
 double gradient(unsigned char *image, int indice, int nbLignes, int nbColonnes, string methode)
 {
@@ -62,11 +53,7 @@ double gradient(unsigned char *image, int indice, int nbLignes, int nbColonnes, 
         return grad;
     }
 }
-/*
-[indice-nbColonnes-1]   [indice-nbColonnes]     [indice-nbColonnes+1]
-[indice-1]              [indice]                [indice+1]
-[indice+nbColonnes-1]   [indice+nbColonnes]     [indice+nbColonnes+1]
-*/
+
 void calculerContours(unsigned char *image, int nbLignes, int nbColonnes, string methode, unsigned char *&retour)
 {
     int seuil = 30;
@@ -90,10 +77,10 @@ void contours(string nomFichier, string methode)
     unsigned char *image;
     unsigned char *contours;
     lirePGM(nomFichier+".pgm", nbLignes, nbColonnes, image);
-    cout << "Nombre lignes = " << nbLignes << " et de colonnes = " << nbColonnes << endl;
+    cout << "Nombre de lignes = " << nbLignes << " et de colonnes = " << nbColonnes << endl;
     calculerContours(image, nbLignes, nbColonnes, methode, contours);
-    ecrirePGM(nomFichier+"contours.pgm", nbLignes, nbColonnes, contours);
-    cout << nomFichier+"contours.pgm" << " cree." << endl;
+    ecrirePGM(nomFichier+"_contours.pgm", nbLignes, nbColonnes, contours);
+    cout << nomFichier+"_contours.pgm" << " cree." << endl;
 }
 
 int main()
