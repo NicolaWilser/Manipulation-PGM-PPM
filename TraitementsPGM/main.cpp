@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <sstream>
 
 using namespace std;
 
@@ -11,34 +12,50 @@ void lirePGM(string nomFichier, int &nbLignes, int &nbColonnes, unsigned char *&
     ifstream fichier(nomFichier.c_str(), ios::binary);
     if (fichier)
     {
-    	string extension;
-	    fichier >> extension;
-	    if (extension == "P5" || extension == "p5") // ne gere pas P3 pour le moment
-	    {
-	        fichier >> nbColonnes >> nbLignes;
-	        int valMax;
-	        fichier >> valMax;
-	        int nbElements = nbLignes*nbColonnes;
-	        image = new unsigned char[nbElements];
-	        for (int i = 0; i < nbElements; i++)
+        string extension;
+        fichier >> extension;
+        if (extension == "P5" || extension == "p5")
+        {
+            char tmp;
+            string debut;
+            string ligneIgnoree;
+            if (fichier)
+                fichier >> debut;
+            int nbLignesIgnorees = 0;
+            while (fichier && debut[0] == '#')
+            {
+                getline(fichier, ligneIgnoree);
+                fichier >> debut;
+                nbLignesIgnorees++;
+            }
+            if (nbLignesIgnorees != 0)
+                cout << nbLignesIgnorees << " ligne(s) de commentaires ignoree(s)." << endl;
+            stringstream debutStream(debut); // debut contient maintenant un string representant le nombre de colonnes
+            debutStream >> nbColonnes;
+            fichier >> nbLignes;
+            int valMax;
+            fichier >> valMax;
+            int nbElements = nbLignes*nbColonnes;
+            image = new unsigned char[nbElements];
+            for (int i = 0; i < nbElements; i++)
             {
                 image[i] = (unsigned char)0;
             }
-	        int indice = 0;
-	        while (fichier)
-	        {
-	            char tmp;
+            int indice = 0;
+            image[indice++] = (unsigned char)tmp;
+            while (fichier)
+            {
                 fichier.read(&tmp, 1);
                 image[indice++] = (unsigned char)tmp;
-	        }
+            }
         }
         cout << "Fichier " << nomFichier << " lu correctement." << endl;
-	}
-	else
-	{
-	    cout << "Fichier introuvable." << endl;
+    }
+    else
+    {
+        cout << "Fichier introuvable." << endl;
         image = nullptr;
-	}
+    }
 }
 
 void ecrirePGM(string nomFichier, int nbLignes, int nbColonnes, unsigned char *image)
@@ -48,9 +65,10 @@ void ecrirePGM(string nomFichier, int nbLignes, int nbColonnes, unsigned char *i
     int nbElements = nbLignes*nbColonnes;
     for (int i = 0; i < nbElements; i++)
     {
-        fichier.write(reinterpret_cast<char*>(image+i), 1);
+        char tmp;
+        tmp = (char)image[i];
+        fichier.write(&tmp, 1);
     }
-    cout << endl;
 }
 
 void calculerHistogramme(unsigned char *image, int nbLignes, int nbColonnes, int *&retour, int &maxVal)
@@ -149,6 +167,7 @@ void contours()
         cout << "Nombre de lignes = " << nbLignes << " et de colonnes = " << nbColonnes << "." << endl;
         creerContours(image, nbLignes, nbColonnes, nomMethode, contours);
         ecrirePGM(nomFichier+"_contours.pgm", nbLignes, nbColonnes, contours);
+        cout << endl;
         cout << nomFichier+"_contours.pgm" << " cree." << endl;
     }
 }
@@ -169,13 +188,14 @@ void histogramme()
         calculerHistogramme(image, nbLignes, nbColonnes, histo, maxVal);
         creerHistogramme(histo, maxVal, histoImage);
         ecrirePGM(nomFichier+"_histo.pgm", niveauGrisMax+1, niveauGrisMax+1, histoImage);
+        cout << endl;
         cout << nomFichier+"_histo.pgm" << " cree." << endl;
     }
 }
 
 int main()
 {
-    //contours();
-    histogramme();
+    contours();
+    //histogramme();
     return 0;
 }
