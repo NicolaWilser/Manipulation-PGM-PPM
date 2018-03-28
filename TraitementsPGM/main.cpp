@@ -63,9 +63,9 @@ void ecrirePGM(string nomFichier, int nbLignes, int nbColonnes, unsigned char *i
     ofstream fichier(nomFichier.c_str());
     fichier << "P5" << endl << nbColonnes << " " << nbLignes << endl << 255 << endl;
     int nbElements = nbLignes*nbColonnes;
+    char tmp;
     for (int i = 0; i < nbElements; i++)
     {
-        char tmp;
         tmp = (char)image[i];
         fichier.write(&tmp, 1);
     }
@@ -87,6 +87,30 @@ void calculerHistogramme(unsigned char *image, int nbLignes, int nbColonnes, int
     }
 }
 
+double gradient(unsigned char *image, int indice, int nbLignes, int nbColonnes, string methode)
+{
+    if (methode == "roberts")
+    {
+        int x = (int)image[indice]-(int)image[indice+nbColonnes+1];
+        int y = (int)image[indice+1]-(int)image[indice+nbColonnes];
+        double grad = sqrt(pow(x,2)+pow(y,2));
+        return grad;
+    }
+    else
+    {
+        int x = (int)image[indice]-(int)image[indice+nbColonnes+1];
+        int y = (int)image[indice+1]-(int)image[indice+nbColonnes];
+        double grad = sqrt(pow(x,2)+pow(y,2));
+        return grad;
+    }
+}
+
+// tab1D[indice] = tab2D[ligne][colonne]
+int indice(unsigned char *image, int nbLignes, int nbColonnes, int ligne, int colonne)
+{
+    return nbColonnes*ligne + colonne;
+}
+
 void creerHistogramme(int *histogramme, int maxVal, unsigned char *&retour)
 {
     int taille = (niveauGrisMax+1)*(niveauGrisMax+1);
@@ -103,30 +127,6 @@ void creerHistogramme(int *histogramme, int maxVal, unsigned char *&retour)
             int nbc = i+1;
             retour[nbc+nbl] = (unsigned char)255;
         }
-    }
-}
-
-/* Aide pour calculer le gradient :
-[indice-nbColonnes-1]   [indice-nbColonnes]     [indice-nbColonnes+1]
-[indice-1]              [indice]                [indice+1]
-[indice+nbColonnes-1]   [indice+nbColonnes]     [indice+nbColonnes+1]
-*/
-
-double gradient(unsigned char *image, int indice, int nbLignes, int nbColonnes, string methode)
-{
-    if (methode == "roberts")
-    {
-        int x = (int)image[indice]-(int)image[indice+nbColonnes+1];
-        int y = (int)image[indice+1]-(int)image[indice+nbColonnes];
-        double grad = sqrt(pow(x,2)+pow(y,2));
-        return grad;
-    }
-    else
-    {
-        int x = (int)image[indice]-(int)image[indice+nbColonnes+1];
-        int y = (int)image[indice+1]-(int)image[indice+nbColonnes];
-        double grad = sqrt(pow(x,2)+pow(y,2));
-        return grad;
     }
 }
 
